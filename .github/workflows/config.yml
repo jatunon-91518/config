@@ -1,0 +1,129 @@
+name: Workflow Publisher
+on:
+  workflow_dispatch:
+    inputs:
+      choice:
+        type: choice
+        description: 'Select the environment'
+        default: 'dev'
+        options:
+          - 'dev'
+run-name: ${{ github.workflow }} - ${{ format('{0}', tojson(inputs)) || '' }}
+jobs:
+  publish-template:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        include:
+          #<!-- JAVA_Template -->
+            - runtime: java
+              target_repo: mpay-modernization-ms-commonservice
+            - runtime: java
+              target_repo: mpay-modernization-ms-merchant
+            - runtime: java
+              target_repo: mpay-modernization-ms-admin
+            - runtime: java
+              target_repo: mpay-modernization-ms-authadmin
+            - runtime: java
+              target_repo: mpay-modernization-ms-switching
+            - runtime: java
+              target_repo: mpay-modernization-ms-paycreditcards
+            - runtime: java
+              target_repo: mpay-modernization-ms-sofcreditcards
+            - runtime: java
+              target_repo: mpay-modernization-ms-downstream
+            - runtime: java
+              target_repo: mpay-modernization-ms-mock
+          #<!-- NodeJS_Template -->
+            - runtime: node
+              target_repo: mpay-modernization-web-merchant
+            - runtime: node
+              target_repo: mpay-modernization-web-admin
+          #<!-- Batch_Template -->
+            - runtime: batch
+              target_repo: mpay-modernization-batch-service
+            - runtime: batch
+              target_repo: mpay-modernization-batch-paymentsof
+            - runtime: batch
+              target_repo: mpay-modernization-batch-merchantprofile
+            - runtime: batch
+              target_repo: mpay-modernization-batch-merchantaddress
+            - runtime: batch
+              target_repo: mpay-modernization-batch-merchantcontactperson
+            - runtime: batch
+              target_repo: mpay-modernization-batch-merchantuser
+          #<!-- Webhosting_Template -->
+            - runtime: webhosting
+              target_repo: mpay-modernization-web-paymentform
+          #<!-- Maven_SharedLibs_Template -->
+            - runtime: maven-shared-libs
+              target_repo: mpay-modernization-lib-commonlibrary
+            - runtime: maven-shared-libs
+              target_repo: mpay-modernization-lib-commonpommaster
+          #<!-- NPM_SharedLibs_Template -->
+            - runtime: npm-shared-libs
+              target_repo: mpay-modernization-lib-batchlib
+              
+          
+    steps:
+      - name: Checkout Workflows
+        uses: actions/checkout@v4
+        with:
+          token: ${{secrets.ORG_PUSH_PULL_REPO}}
+          repository: ais-pci-spdg/mpay-modernization-action-workflow
+          ref: main
+          
+      - name: Checkout target repo
+        uses: actions/checkout@v4
+        with:
+            token: ${{secrets.PAT_WORKFLOW_SCOPE}} ## need PAT with workflow scope
+            repository: ${{ github.repository_owner }}/${{ matrix.target_repo }}
+
+            path: ${{ matrix.target_repo }}
+            fetch-depth: 0 # Fetch all branches
+
+      - name: Update&Publish workflows to target repos
+        shell: bash
+        run: |
+            git fetch --all
+
+            for branch in $(git branch -r | grep -v '\->'|egrep 'main|feature/|rc/' | sed 's/origin\///'); do
+              git checkout $branch
+
+              mkdir -p .github/workflows/ 
+              cp ../workflow-templates/${{ inputs.choice}}/${{ matrix.runtime }}/* .github/workflows/
+
+              git config --local user.email "action@github.com"
+              git config --local user.name "GitHub Action"
+              git add .github/workflows/
+              git commit --allow-empty -m "Github Agent | Workflows has updated"
+              
+              git push origin $branch
+              sleep 3
+            done
+        working-directory: ./${{ matrix.target_repo }}
+
+
+      # - name: Setup gh cli
+      #   run: |
+      #     sudo apt update
+      #     sudo apt install -y curl jq
+      #     curl -fsSL https://github.com/cli/cli/releases/download/v2.29.0/gh_2.29.0_linux_amd64.deb -o ghcli.deb
+      #     sudo dpkg -i ghcli.deb
+      #     gh --version
+      # - name: Set up Repositoty Secret
+      #   id: vars
+      #   run: |
+      #     # Define an array of secret names
+      #     SECRET_NAMES=( "ACRICDPLATFORM_TOKEN" "AZURE_CREDENTIALS_DEV")
+      #     SECRET_VALUES=( ["ACRICDPLATFORM_TOKEN": ${{ secrets.ACRICDPLATFORM_TOKEN }}] ["AZURE_CREDENTIALS_DEV": ${{ secrets.AZURE_CREDENTIALS_DEV }}] )
+
+      #     TARGET_REPO="${{ github.repository_owner }}/${{ matrix.target_repo }}"
+      # - name: Set secrets using loop
+      #   run: |
+      #     for i in "${SECRET_NAMES[@]}"; do
+      #       echo "i = ${i}"
+      #       SECRET_VALUE=$(echo "${!SECRET_VALUES[@]}[$i]")
+      #       echo "Adding secret ${i} to $TARGET_REPO"
+      #       gh secret set "${i}" -b "${SECRET_VALUE}" -R "${TARGET_REPO}"
+      #     done
