@@ -41,28 +41,16 @@ jobs:
               target_repo: mpay-modernization-web-admin
           #<!-- Batch_Template -->
             - runtime: batch
-            - runtime: batch
-              target_repo: test1
               target_repo: mpay-modernization-batch-service
             - runtime: batch
-            - runtime: batch
-              target_repo: test1
               target_repo: mpay-modernization-batch-paymentsof
             - runtime: batch
-            - runtime: batch
-              target_repo: test1
               target_repo: mpay-modernization-batch-merchantprofile
             - runtime: batch
-            - runtime: batch
-              target_repo: test1
               target_repo: mpay-modernization-batch-merchantaddress
             - runtime: batch
-            - runtime: batch
-              target_repo: test1
               target_repo: mpay-modernization-batch-merchantcontactperson
             - runtime: batch
-            - runtime: batch
-              target_repo: test1
               target_repo: mpay-modernization-batch-merchantuser
           #<!-- Webhosting_Template -->
             - runtime: webhosting
