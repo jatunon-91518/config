@@ -41,8 +41,6 @@ jobs:
               target_repo: mpay-modernization-web-admin
           #<!-- Batch_Template -->
             - runtime: batch
-        - runtime: 
-          target_repo: 
               target_repo: mpay-modernization-batch-service
             - runtime: batch
               target_repo: mpay-modernization-batch-paymentsof
