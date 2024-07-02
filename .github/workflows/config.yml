@@ -15,7 +15,7 @@ jobs:
     strategy:
       matrix:
         include:
-          #<!-- JAVA_Template -->
+          #java
             - runtime: java
               target_repo: mpay-modernization-ms-commonservice
             - runtime: java
@@ -34,12 +34,12 @@ jobs:
               target_repo: mpay-modernization-ms-downstream
             - runtime: java
               target_repo: mpay-modernization-ms-mock
-          #<!-- NodeJS_Template -->
+          #node
             - runtime: node
               target_repo: mpay-modernization-web-merchant
             - runtime: node
               target_repo: mpay-modernization-web-admin
-          #<!-- Batch_Template -->
+          #batch
             - runtime: batch
               target_repo: mpay-modernization-batch-service
             - runtime: batch
@@ -52,15 +52,15 @@ jobs:
               target_repo: mpay-modernization-batch-merchantcontactperson
             - runtime: batch
               target_repo: mpay-modernization-batch-merchantuser
-          #<!-- Webhosting_Template -->
+          #webhosting
             - runtime: webhosting
               target_repo: mpay-modernization-web-paymentform
-          #<!-- Maven_SharedLibs_Template -->
+          #maven-shared-libs
             - runtime: maven-shared-libs
               target_repo: mpay-modernization-lib-commonlibrary
             - runtime: maven-shared-libs
               target_repo: mpay-modernization-lib-commonpommaster
-          #<!-- NPM_SharedLibs_Template -->
+          #npm-shared-libs
             - runtime: npm-shared-libs
               target_repo: mpay-modernization-lib-batchlib
               
