@@ -17,6 +17,8 @@ jobs:
         include:
           #java
             - runtime: java
+              target_repo: service_java_test
+            - runtime: java
               target_repo: mpay-modernization-ms-commonservice
             - runtime: java
               target_repo: mpay-modernization-ms-merchant
