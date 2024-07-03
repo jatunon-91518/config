@@ -38,6 +38,8 @@ jobs:
               target_repo: mpay-modernization-ms-mock
           #node
             - runtime: node
+              target_repo: xxxxx1234
+            - runtime: node
               target_repo: mpay-modernization-web-merchant
             - runtime: node
               target_repo: mpay-modernization-web-admin
